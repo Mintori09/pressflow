@@ -1,0 +1,48 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  release:
+    name: Build & Publish Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libwayland-dev \
+            libxkbcommon-dev \
+            pkg-config
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Build release binary
+        run: cargo build --release --locked
+
+      - name: Package artifact & checksum
+        run: |
+          ARCHIVE="pressflow-${{ github.ref_name }}-x86_64-unknown-linux-gnu.tar.gz"
+          tar -czf "$ARCHIVE" -C target/release pressflow
+          sha256sum "$ARCHIVE" > "${ARCHIVE}.sha256"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v3
+        with:
+          files: |
+            pressflow-${{ github.ref_name }}-x86_64-unknown-linux-gnu.tar.gz
+            pressflow-${{ github.ref_name }}-x86_64-unknown-linux-gnu.tar.gz.sha256
+          generate_release_notes: true

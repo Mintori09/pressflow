@@ -1,0 +1,53 @@
+[package]
+name = "pressflow"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+publish = false
+
+[workspace]
+members = []
+
+[workspace.package]
+edition = "2024"
+license = "GPLv3"
+authors = ["mintori"]
+
+[profile.dev]
+incremental = true
+codegen-units = 16
+debug = "limited"
+
+[profile.dev.build-override]
+codegen-units = 16
+debug = "limited"
+
+[profile.dev.package]
+serde = { opt-level = 3 }
+toml = { opt-level = 3 }
+smithay-client-toolkit = { opt-level = 3 }
+wayland-client = { opt-level = 3 }
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+strip = "symbols"
+debug = "limited"
+
+[profile.release-fast]
+inherits = "release"
+lto = false
+codegen-units = 16
+strip = "none"
+debug = "full"
+
+[dependencies]
+slint = { version = "1.13.1", features = [
+  "backend-winit",
+  "renderer-software",
+] }
+smithay-client-toolkit = "0.20.0"
+smol = "2.0.2"
+toml = { version = "1.2.2", features = ["preserve_order"] }
+wayland-protocols-plasma = "0.3.12"
