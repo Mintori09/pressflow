@@ -1,0 +1,32 @@
+# Rust / Cargo
+/target/
+**/*.rs.bk
+*.pdb
+
+# Coverage / profiling
+*.profraw
+*.profdata
+*.gcda
+*.gcno
+/tarpaulin-report.html
+/lcov.info
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+
+# Tooling & caches
+.rumdl_cache/
+.direnv/
+
+# Editors & IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
