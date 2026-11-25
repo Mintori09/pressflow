@@ -1,0 +1,54 @@
+[appearance]
+color_scheme = "system" # system | light | dark
+corner_radius = 12.0
+border_width = 1.0
+window_opacity = 0.85
+columns = 4
+layout = "classic"      # classic | which-key | compact
+hud_anchor = "bottom"   # top | bottom | left | right | center | top-left | top-right | bottom-left | bottom-right
+hud_margin = 16
+
+[behavior]
+autostart = true
+cheatsheet_delay_ms = 1000
+cheatsheet_hidden = false
+cheatsheet_idle_mode = "indicator"  # indicator | invisible
+watchdog_timeout_secs = 10
+key_repeat_suppression = true
+auto_close = true
+fetch_url_favicons = false
+show_app_icons = true
+auto_reload_config = true
+default_terminal = "auto"
+allow_external_url_triggers = false
+
+[keymap]
+
+# Action: <key> = ["<type>:<command>", "<Label>", { repeatable = <bool> }]
+# URLs (http://, https://) can be used directly without a type prefix.
+# Variables: {clipboard}, {selection}, {date}, {time}, {timestamp}, {env:VAR}
+t = ["app:kitty", "Terminal", { repeatable = true }]
+b = ["app:firefox", "Browser", { repeatable = true }]
+g = ["https://github.com", "GitHub", { repeatable = false }]
+s = ["https://www.google.com/search?q={clipboard}", "Search Clipboard"]
+c = ["snippet:Xin chào! ({date} {time})", "Greeting", { repeatable = true }]
+k = ["key:Ctrl+Shift+C", "Copy", { repeatable = true }]
+w = ["wm:toggle_floating", "Toggle Float"]
+h = [
+  "cmd:curl -fsS -X POST https://example.com/webhook -d '{\"ping\":true}'",
+  "Webhook",
+]
+r = ["cmd:systemctl reboot", "Reboot"]
+
+# Group & Nested Group
+[keymap.m]
+label = "Media & Audio"
+p = ["media:play_pause", "Play / Pause"]
+n = ["media:next", "Next", { repeatable = true }]
+u = ["volume:up:5", "Volume +5%", { repeatable = true }]
+d = ["volume:down:5", "Volume -5%", { repeatable = true }]
+
+[keymap.m.s]
+label = "Media"
+p = ["media:play_pause", "Play / Pause"]
+m = ["media:mute", "Mute"]
