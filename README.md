@@ -4,7 +4,7 @@ A Rust GUI application built with [Slint](https://slint.dev/).
 
 ## Requirements
 
-- **Rust**: `1.85` or newer (Edition 2024)
+- **Rust**: `1.91` or newer (Edition 2024)
 - **System dependencies** (Linux / Wayland):
   - `libwayland-dev`
   - `libxkbcommon-dev`

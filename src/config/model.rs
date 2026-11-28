@@ -116,10 +116,11 @@ impl Default for BehaviorConfig {
     }
 }
 
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct ActionOptions {
     pub repeatable: bool,
+    pub ask: bool,
 }
 
 #[derive(Deserialize)]
@@ -135,6 +136,12 @@ pub struct ActionNode {
     pub command: String,
     pub label: String,
     pub options: ActionOptions,
+}
+
+impl ActionNode {
+    pub fn has_input(&self) -> bool {
+        self.command.contains("{input}") || self.command.contains("{input:")
+    }
 }
 
 impl From<ActionTuple> for ActionNode {

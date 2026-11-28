@@ -9,7 +9,6 @@ use std::{
 use indexmap::IndexMap;
 
 use crate::config::{
-    default_config_path,
     key_binding::KeyBinding,
     model::{ChordNode, Config},
 };
@@ -185,14 +184,14 @@ fn validate_nodes(
     }
 }
 
-struct Colors {
-    red: &'static str,
+pub(crate) struct Colors {
+    pub(crate) red: &'static str,
     yellow: &'static str,
     green: &'static str,
     cyan: &'static str,
     bold: &'static str,
     dim: &'static str,
-    reset: &'static str,
+    pub(crate) reset: &'static str,
 }
 
 const ANSI: Colors = Colors {
@@ -216,7 +215,7 @@ const PLAIN: Colors = Colors {
 };
 
 impl Colors {
-    fn detect() -> Self {
+    pub(crate) fn detect() -> Self {
         if io::stderr().is_terminal() && std::env::var_os("NO_COLOR").is_none() {
             ANSI
         } else {
@@ -285,73 +284,76 @@ fn print_diagnostic(is_error: bool, diag: &Diagnostic, content: &str, c: &Colors
     }
 }
 
-pub fn validate_config(path: Option<PathBuf>) {
-    let target = path.unwrap_or_else(default_config_path);
-    let c = Colors::detect();
+impl Config {
+    pub fn validate(path: PathBuf) -> Result<Self, Box<dyn std::error::Error>> {
+        let c = Colors::detect();
 
-    let content = fs::read_to_string(&target).unwrap_or_else(|e| {
-        eprintln!(
-            "{}×{} Failed to read '{}': {e}",
-            c.red,
-            c.reset,
-            target.display()
-        );
-        process::exit(1);
-    });
+        let content = fs::read_to_string(&path).unwrap_or_else(|e| {
+            eprintln!(
+                "{}×{} Failed to read '{}': {e}",
+                c.red,
+                c.reset,
+                path.display()
+            );
+            process::exit(1);
+        });
 
-    let config: Config = toml::from_str(&content).unwrap_or_else(|e| {
-        eprintln!(
-            "{}×{} Invalid TOML in '{}':\n{e}",
-            c.red,
-            c.reset,
-            target.display()
-        );
-        process::exit(1);
-    });
+        let config: Config = toml::from_str(&content).unwrap_or_else(|e| {
+            eprintln!(
+                "{}×{} Invalid TOML in '{}':\n{e}",
+                c.red,
+                c.reset,
+                path.display()
+            );
+            process::exit(1);
+        });
 
-    let report = validate(&config);
+        let report = validate(&config);
 
-    for warning in &report.warnings {
-        print_diagnostic(false, warning, &content, &c);
-    }
-    for error in &report.errors {
-        print_diagnostic(true, error, &content, &c);
-    }
+        for warning in &report.warnings {
+            print_diagnostic(false, warning, &content, &c);
+        }
+        for error in &report.errors {
+            print_diagnostic(true, error, &content, &c);
+        }
 
-    if !report.errors.is_empty() {
-        eprintln!(
-            "\n{}Found {} error(s) and {} warning(s){} in {}{}{}",
-            c.red,
-            report.errors.len(),
-            report.warnings.len(),
-            c.reset,
-            c.bold,
-            target.display(),
-            c.reset
-        );
-        process::exit(1);
-    }
+        if !report.errors.is_empty() {
+            eprintln!(
+                "\n{}Found {} error(s) and {} warning(s){} in {}{}{}",
+                c.red,
+                report.errors.len(),
+                report.warnings.len(),
+                c.reset,
+                c.bold,
+                path.display(),
+                c.reset
+            );
+            process::exit(1);
+        }
 
-    if report.warnings.is_empty() {
-        println!(
-            "{}✓{} Config is valid: {}{}{}",
-            c.green,
-            c.reset,
-            c.bold,
-            target.display(),
-            c.reset
-        );
-    } else {
-        println!(
-            "\n{}✓{} Config is valid ({}{} warning(s){}): {}{}{}",
-            c.green,
-            c.reset,
-            c.yellow,
-            report.warnings.len(),
-            c.reset,
-            c.bold,
-            target.display(),
-            c.reset
-        );
+        if report.warnings.is_empty() {
+            println!(
+                "{}✓{} Config is valid: {}{}{}",
+                c.green,
+                c.reset,
+                c.bold,
+                path.display(),
+                c.reset
+            );
+        } else {
+            println!(
+                "\n{}✓{} Config is valid ({}{} warning(s){}): {}{}{}",
+                c.green,
+                c.reset,
+                c.yellow,
+                report.warnings.len(),
+                c.reset,
+                c.bold,
+                path.display(),
+                c.reset
+            );
+        }
+
+        Ok(config)
     }
 }

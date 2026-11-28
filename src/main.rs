@@ -1,8 +1,5 @@
 use clap::Parser;
-use pressflow::{
-    cli::{Args, Commands},
-    config::validate::validate_config,
-};
+use pressflow::cli::{Args, Commands};
 
 fn main() {
     let cli = Args::parse();
@@ -18,7 +15,7 @@ fn main() {
             print!("Hide");
         }
         Some(Commands::Check { path }) => {
-            validate_config(path);
+            print!("Path: {}", path.unwrap().display());
         }
         Some(Commands::Settings) => {
             print!("Settings")

@@ -24,13 +24,14 @@ allow_external_url_triggers = false
 
 [keymap]
 
-# Action: <key> = ["<type>:<command>", "<Label>", { repeatable = <bool> }]
+# Action: <key> = ["<type>:<command>", "<Label>", { repeatable = <bool>, ask = <bool>}]
 # URLs (http://, https://) can be used directly without a type prefix.
-# Variables: {clipboard}, {selection}, {date}, {time}, {timestamp}, {env:VAR}
+# Variables: {input}, {input:Prompt}, {clipboard}, {selection}, {date}, {time}, {timestamp}, {env:VAR}
 t = ["app:kitty", "Terminal", { repeatable = true }]
 b = ["app:firefox", "Browser", { repeatable = true }]
 g = ["https://github.com", "GitHub", { repeatable = false }]
 s = ["https://www.google.com/search?q={clipboard}", "Search Clipboard"]
+f = ["https://www.google.com/search?q={input:Search Google}", "Search Input"]
 c = ["snippet:Xin chào! ({date} {time})", "Greeting", { repeatable = true }]
 k = ["key:Ctrl+Shift+C", "Copy", { repeatable = true }]
 w = ["wm:toggle_floating", "Toggle Float"]
